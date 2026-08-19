@@ -1,4 +1,41 @@
-export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api'
+const localHostnames = new Set(['localhost', '127.0.0.1', '0.0.0.0'])
+
+function isRemoteBrowserHost() {
+  return typeof window !== 'undefined' && !localHostnames.has(window.location.hostname)
+}
+
+function defaultApiBaseUrl() {
+  if (typeof window === 'undefined' || !isRemoteBrowserHost()) {
+    return 'http://localhost:8000/api'
+  }
+
+  return `${window.location.origin}/api`
+}
+
+function resolveApiBaseUrl() {
+  const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL
+
+  if (!configuredBaseUrl) {
+    return defaultApiBaseUrl()
+  }
+
+  if (!isRemoteBrowserHost()) {
+    return configuredBaseUrl
+  }
+
+  try {
+    const url = new URL(configuredBaseUrl)
+    if (localHostnames.has(url.hostname)) {
+      return `${window.location.origin}/api`
+    }
+  } catch {
+    return configuredBaseUrl
+  }
+
+  return configuredBaseUrl
+}
+
+export const apiBaseUrl = resolveApiBaseUrl().replace(/\/$/, '')
 const tokenStorageKey = 'ticketing_auth_token'
 const pendingGetRequests = new Map()
 
