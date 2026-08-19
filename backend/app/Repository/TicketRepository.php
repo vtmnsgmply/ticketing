@@ -51,6 +51,27 @@ class TicketRepository
         return Ticket::query()->with($this->detailRelations())->find($ticketId);
     }
 
+    public function findActiveByNumberForCustomer(string $ticketNumber, User $customer): ?Ticket
+    {
+        return Ticket::query()
+            ->with($this->detailRelations())
+            ->where('customer_id', $customer->id)
+            ->where('ticket_number', strtoupper(trim($ticketNumber)))
+            ->whereNotIn('status', $this->closedStatuses())
+            ->first();
+    }
+
+    public function activeForCustomer(User $customer, int $limit = 6)
+    {
+        return Ticket::query()
+            ->with(['customer.role', 'department', 'category', 'priority', 'assignedAgent.role'])
+            ->where('customer_id', $customer->id)
+            ->whereNotIn('status', $this->closedStatuses())
+            ->latest('updated_at')
+            ->limit($limit)
+            ->get();
+    }
+
     /**
      * @param array<string, mixed> $filters
      */
@@ -435,6 +456,18 @@ class TicketRepository
         }
 
         return $this->permittedDepartmentIdsByUser[(int) $user->id] = array_values(array_unique(array_filter($ids)));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function closedStatuses(): array
+    {
+        return [
+            Ticket::STATUS_RESOLVED,
+            Ticket::STATUS_CLOSED,
+            Ticket::STATUS_CANCELLED,
+        ];
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -17,6 +18,16 @@ class UserRepository
         return User::query()
             ->with('role')
             ->where('email', $email)
+            ->first();
+    }
+
+    public function findActiveCustomerByTelegramChatId(string $chatId): ?User
+    {
+        return User::query()
+            ->with('role')
+            ->where('telegram_profile', trim($chatId))
+            ->where('is_active', true)
+            ->whereHas('role', fn ($query) => $query->where('slug', Role::CUSTOMER))
             ->first();
     }
 
