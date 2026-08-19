@@ -1,0 +1,81 @@
+services:
+  db:
+    image: mariadb:11.8
+    container_name: ticket-mysql
+    restart: unless-stopped
+    env_file:
+      - ./mysql.env
+    volumes:
+      - ticket_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - ticket_internal
+
+  php:
+    build:
+      context: .
+      dockerfile: deployment/php/Dockerfile
+    image: ticket-backend:latest
+    container_name: ticket-php
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/.env:/var/www/html/.env:ro
+      - ./backend/storage:/var/www/html/storage
+    networks:
+      - ticket_internal
+
+  reverb:
+    image: ticket-backend:latest
+    container_name: ticket-reverb
+    restart: unless-stopped
+    depends_on:
+      - php
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/.env:/var/www/html/.env:ro
+      - ./backend/storage:/var/www/html/storage
+    command:
+      - php
+      - artisan
+      - reverb:start
+      - --host=0.0.0.0
+      - --port=8080
+    expose:
+      - "8080"
+    networks:
+      - ticket_internal
+
+  web:
+    build:
+      context: .
+      dockerfile: deployment/nginx/Dockerfile
+    image: ticket-web:latest
+    container_name: ticket-web
+    restart: unless-stopped
+    depends_on:
+      - php
+      - reverb
+    volumes:
+      - ./backend/storage/app/public:/var/www/laravel-storage/app/public:ro
+    expose:
+      - "80"
+    networks:
+      - ticket_internal
+      - web_gateway
+
+networks:
+  ticket_internal:
+    driver: bridge
+  web_gateway:
+    external: true
+
+volumes:
+  ticket_mysql_data:
