@@ -6,22 +6,35 @@ import { AuthContext } from './authContextValue'
 
 const userStorageKey = 'ticketing_auth_user'
 
-function readStoredUser() {
+function readUserFromStorage(storage) {
   try {
-    const payload = window.localStorage.getItem(userStorageKey)
+    const payload = storage?.getItem(userStorageKey)
     return payload ? JSON.parse(payload) : null
   } catch {
     return null
   }
 }
 
-function storeUser(user) {
-  if (!user) {
-    window.localStorage.removeItem(userStorageKey)
-    return
-  }
+function writeUserToStorage(storage, user) {
+  try {
+    if (!user) {
+      storage?.removeItem(userStorageKey)
+      return
+    }
 
-  window.localStorage.setItem(userStorageKey, JSON.stringify(user))
+    storage?.setItem(userStorageKey, JSON.stringify(user))
+  } catch {
+    // Storage can be unavailable in strict browser privacy modes.
+  }
+}
+
+function readStoredUser() {
+  return readUserFromStorage(window.sessionStorage) ?? readUserFromStorage(window.localStorage)
+}
+
+function storeUser(user) {
+  writeUserToStorage(window.sessionStorage, user)
+  writeUserToStorage(window.localStorage, user)
 }
 
 export function AuthProvider({ children }) {

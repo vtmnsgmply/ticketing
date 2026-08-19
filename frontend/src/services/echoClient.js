@@ -3,6 +3,7 @@ import Pusher from 'pusher-js'
 import { apiBaseUrl, getAuthToken } from './apiClient'
 
 let echo = null
+let echoAuthToken = null
 
 function apiRoot() {
   return apiBaseUrl.replace(/\/api\/?$/, '')
@@ -13,9 +14,15 @@ export function getEchoClient() {
   const host = import.meta.env.VITE_REVERB_HOST ?? 'localhost'
   const port = Number(import.meta.env.VITE_REVERB_PORT ?? 8080)
   const scheme = import.meta.env.VITE_REVERB_SCHEME ?? 'http'
+  const token = getAuthToken()
 
-  if (!key) return null
-  if (echo) return echo
+  if (!key || !token) {
+    disconnectEcho()
+    return null
+  }
+
+  if (echo && echoAuthToken === token) return echo
+  disconnectEcho()
 
   window.Pusher = Pusher
 
@@ -31,10 +38,11 @@ export function getEchoClient() {
     auth: {
       headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${getAuthToken()}`,
+        Authorization: `Bearer ${token}`,
       },
     },
   })
+  echoAuthToken = token
 
   return echo
 }
@@ -43,4 +51,5 @@ export function disconnectEcho() {
   if (!echo) return
   echo.disconnect()
   echo = null
+  echoAuthToken = null
 }

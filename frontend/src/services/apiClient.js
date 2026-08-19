@@ -2,6 +2,27 @@ export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost
 const tokenStorageKey = 'ticketing_auth_token'
 const pendingGetRequests = new Map()
 
+function storageValue(storage, key) {
+  try {
+    return storage?.getItem(key) ?? null
+  } catch {
+    return null
+  }
+}
+
+function setStorageValue(storage, key, value) {
+  try {
+    if (value) {
+      storage?.setItem(key, value)
+      return
+    }
+
+    storage?.removeItem(key)
+  } catch {
+    // Storage can be unavailable in strict browser privacy modes.
+  }
+}
+
 function parseJsonPayload(rawPayload) {
   if (!rawPayload) return null
 
@@ -30,16 +51,12 @@ function parseJsonPayload(rawPayload) {
 }
 
 export function getAuthToken() {
-  return window.localStorage.getItem(tokenStorageKey)
+  return storageValue(window.sessionStorage, tokenStorageKey) ?? storageValue(window.localStorage, tokenStorageKey)
 }
 
 export function setAuthToken(token) {
-  if (token) {
-    window.localStorage.setItem(tokenStorageKey, token)
-    return
-  }
-
-  window.localStorage.removeItem(tokenStorageKey)
+  setStorageValue(window.sessionStorage, tokenStorageKey, token)
+  setStorageValue(window.localStorage, tokenStorageKey, token)
 }
 
 export async function apiRequest(path, options = {}) {
