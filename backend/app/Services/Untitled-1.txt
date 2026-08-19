@@ -1,0 +1,2 @@
+SELECT * FROM `time_logs` where cutoff_flag='Jul 26, 2026 → Aug 10, 2026' and user_id=66
+SELECT * FROM `time_logs` where cutoff_flag='Aug 11, 2026 → Aug 25, 2026' and user_id=66

@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --sidebar-width: 16rem;
+  --header-height: 4rem;
+
+  /* Signature accent — reserved for logomark, command palette, loaders. Never a badge or button. */
+  --color-signature-500: oklch(0.64 0.16 300);
+
+  /* Radius scale — one notch softer than raw Tailwind defaults for a premium feel */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Elevation — layered (contact + ambient) shadows instead of flat defaults */
+  --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+  --shadow-sm: 0 1px 2px -1px rgb(15 23 42 / 0.06), 0 2px 4px -2px rgb(15 23 42 / 0.04);
+  --shadow-md: 0 2px 4px -2px rgb(15 23 42 / 0.06), 0 8px 16px -4px rgb(15 23 42 / 0.06);
+  --shadow-lg: 0 4px 8px -4px rgb(15 23 42 / 0.08), 0 16px 32px -8px rgb(15 23 42 / 0.10);
+  --shadow-xl: 0 8px 16px -8px rgb(15 23 42 / 0.10), 0 24px 48px -12px rgb(15 23 42 / 0.16);
+
+  /* Motion curves */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0, 1);
+  --ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Z-index scale */
+  --z-dropdown: 20;
+  --z-sticky: 30;
+  --z-drawer: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+  --z-command-palette: 70;
+
+  /* Workspace width tiers — centralized so pages never reach for one-off max-w-[...] values */
+  --width-workspace-dense: 1760px;
+  --width-workspace-wide: 1680px;
+  --width-workspace-standard: 1400px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply min-h-screen bg-slate-50 font-sans text-slate-900;
+    font-feature-settings: "cv11", "ss01";
+    letter-spacing: -0.011em;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}

@@ -1,0 +1,62 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Deployment-only files
+00_DEPLOYMENT.MD
+backend/00_DEPLOYMENT.MD
+ticket-system.tar.gz
+*.tar.gz
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+backend/vendor/
+
+# Build output and caches
+frontend/dist/
+backend/public/build/
+backend/public/hot
+backend/.phpunit.result.cache
+.phpunit.result.cache
+backend/bootstrap/cache/*.php
+backend/bootstrap/cache/*.tmp
+
+# Laravel runtime files
+backend/storage/*
+!backend/storage/app/
+!backend/storage/app/.gitignore
+!backend/storage/app/public/
+!backend/storage/app/public/.gitignore
+!backend/storage/framework/
+!backend/storage/framework/.gitignore
+!backend/storage/framework/cache/
+!backend/storage/framework/cache/.gitignore
+!backend/storage/framework/cache/data/
+!backend/storage/framework/cache/data/.gitignore
+!backend/storage/framework/sessions/
+!backend/storage/framework/sessions/.gitignore
+!backend/storage/framework/testing/
+!backend/storage/framework/testing/.gitignore
+!backend/storage/framework/views/
+!backend/storage/framework/views/.gitignore
+!backend/storage/logs/
+!backend/storage/logs/.gitignore
+
+# Logs
+*.log
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.claude/
