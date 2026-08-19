@@ -26,7 +26,7 @@ export function getEchoClient() {
     wsPort: port,
     wssPort: port,
     forceTLS: scheme === 'https',
-    enabledTransports: scheme === 'https' ? ['wss'] : ['ws'],
+    enabledTransports: ['ws', 'wss'],
     authEndpoint: `${apiRoot()}/api/broadcasting/auth`,
     auth: {
       headers: {
